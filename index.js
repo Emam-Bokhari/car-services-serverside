@@ -11,7 +11,7 @@ app.use(cors())
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.PASS_DB}@cluster0.kndeci6.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -26,21 +26,29 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-const servicesCollectin=client.db("servicesDB").collection("services")
+        // await client.connect();
+        const servicesCollectin = client.db("servicesDB").collection("services")
 
         // read
-        app.get('/service',async(req,res)=>{
-            const cursor=servicesCollectin.find()
-            const result=await cursor.toArray()
+        app.get('/service', async (req, res) => {
+            const cursor = servicesCollectin.find()
+            const result = await cursor.toArray()
             res.send(result)
         })
 
         // create
         app.post('/service', async (req, res) => {
-            const newService=req.body 
-           const result=await servicesCollectin.insertOne(newService)
-           res.send(result)
+            const newService = req.body
+            const result = await servicesCollectin.insertOne(newService)
+            res.send(result)
+        })
+
+        // delete
+        app.delete('/service/:id',async(req,res)=>{
+            const id=req.params.id 
+            const query={_id:new ObjectId(id)}
+            const result=await servicesCollectin.deleteOne(query)
+            res.send(result)
         })
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
