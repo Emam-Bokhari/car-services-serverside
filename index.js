@@ -28,6 +28,14 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 const servicesCollectin=client.db("servicesDB").collection("services")
+
+        // read
+        app.get('/service',async(req,res)=>{
+            const cursor=servicesCollectin.find()
+            const result=await cursor.toArray()
+            res.send(result)
+        })
+
         // create
         app.post('/service', async (req, res) => {
             const newService=req.body 
